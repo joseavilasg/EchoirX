@@ -41,6 +41,7 @@ import app.echoirx.presentation.screens.settings.components.FileNamingBottomShee
 import app.echoirx.presentation.screens.settings.components.RegionBottomSheet
 import app.echoirx.presentation.screens.settings.components.ServerBottomSheet
 import app.echoirx.presentation.screens.settings.components.SettingsActionBottomSheet
+import app.echoirx.presentation.screens.settings.components.UpdateBottomSheet
 
 @Composable
 fun SettingsScreen(
@@ -55,6 +56,7 @@ fun SettingsScreen(
     var showClearDataSheet by remember { mutableStateOf(false) }
     var showRegionSheet by remember { mutableStateOf(false) }
     var showServerSheet by remember { mutableStateOf(false) }
+    var showUpdateSheet by remember { mutableStateOf(false) }
 
     val dirPicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocumentTree()
@@ -135,6 +137,19 @@ fun SettingsScreen(
             },
             onDismiss = { showServerSheet = false },
             focusManager = focusManager
+        )
+    }
+
+    if (showUpdateSheet) {
+        UpdateBottomSheet(
+            currentVersion = viewModel.getCurrentVersion(),
+            latestVersion = state.latestVersion,
+            updateStatus = state.updateStatus,
+            progress = state.downloadProgress,
+            onCheckForUpdates = { viewModel.checkForUpdates() },
+            onDownloadUpdate = { viewModel.downloadUpdate() },
+            onInstallUpdate = { viewModel.installUpdate() },
+            onDismiss = { showUpdateSheet = false }
         )
     }
 
@@ -231,6 +246,7 @@ fun SettingsScreen(
                 title = stringResource(R.string.app_name),
                 subtitle = stringResource(R.string.msg_about_version, BuildConfig.VERSION_NAME),
                 icon = Icons.Outlined.Info,
+                onClick = { showUpdateSheet = true },
                 position = PreferencePosition.Single,
             )
         }

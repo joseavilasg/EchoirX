@@ -1,6 +1,7 @@
 package app.echoirx.di
 
 import app.echoirx.data.remote.api.ApiService
+import app.echoirx.data.remote.api.GithubApiService
 import app.echoirx.domain.repository.SettingsRepository
 import dagger.Module
 import dagger.Provides
@@ -57,4 +58,10 @@ object NetworkModule {
         client: HttpClient,
         settingsRepository: SettingsRepository
     ): ApiService = ApiService(client, settingsRepository)
+
+    @Provides
+    @Singleton
+    fun provideGithubApiService(
+        client: HttpClient
+    ): GithubApiService = GithubApiService(client)
 }
