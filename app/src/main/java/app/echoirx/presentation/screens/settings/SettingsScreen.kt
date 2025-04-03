@@ -15,6 +15,7 @@ import androidx.compose.material.icons.outlined.CloudQueue
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.History
+import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Public
 import androidx.compose.material.icons.outlined.RestartAlt
@@ -210,7 +211,19 @@ fun SettingsScreen(
                 subtitle = stringResource(state.fileNamingFormat.displayNameResId),
                 icon = Icons.Outlined.TextFormat,
                 onClick = { showFormatSheet = true },
-                position = PreferencePosition.Bottom
+                position = PreferencePosition.Middle
+            )
+        }
+        
+        item {
+            PreferenceItem(
+                title = stringResource(R.string.title_save_cover_art),
+                subtitle = stringResource(R.string.msg_save_cover_art_desc),
+                icon = Icons.Outlined.Image,
+                onClick = { viewModel.toggleSaveCoverArt() },
+                position = PreferencePosition.Bottom,
+                hasSwitch = true,
+                switchValue = state.saveCoverArt
             )
         }
 

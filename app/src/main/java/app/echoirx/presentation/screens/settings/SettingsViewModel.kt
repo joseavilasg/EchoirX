@@ -36,13 +36,15 @@ class SettingsViewModel @Inject constructor(
             val format = settingsUseCase.getFileNamingFormat()
             val region = settingsUseCase.getRegion()
             val serverUrl = settingsUseCase.getServerUrl()
+            val saveCoverArt = settingsUseCase.getSaveCoverArt()
 
             _state.update {
                 it.copy(
                     outputDirectory = dir,
                     fileNamingFormat = format,
                     region = region,
-                    serverUrl = serverUrl
+                    serverUrl = serverUrl,
+                    saveCoverArt = saveCoverArt
                 )
             }
         }
@@ -120,19 +122,33 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    fun toggleSaveCoverArt() {
+        viewModelScope.launch {
+            val newValue = !state.value.saveCoverArt
+            settingsUseCase.setSaveCoverArt(newValue)
+            _state.update {
+                it.copy(
+                    saveCoverArt = newValue
+                )
+            }
+        }
+    }
+
     fun resetSettings() {
         viewModelScope.launch {
             settingsUseCase.setOutputDirectory(null)
             settingsUseCase.setFileNamingFormat(FileNamingFormat.TITLE_ONLY)
             settingsUseCase.setRegion("BR")
             settingsUseCase.resetServerSettings()
+            settingsUseCase.setSaveCoverArt(false)
 
             _state.update {
                 it.copy(
                     outputDirectory = null,
                     fileNamingFormat = FileNamingFormat.TITLE_ONLY,
                     region = "BR",
-                    serverUrl = defaultServerUrl
+                    serverUrl = defaultServerUrl,
+                    saveCoverArt = false
                 )
             }
         }

@@ -11,4 +11,6 @@ interface SettingsRepository {
     suspend fun setRegion(region: String)
     suspend fun getServerUrl(): String
     suspend fun setServerUrl(url: String)
+    suspend fun getSaveCoverArt(): Boolean
+    suspend fun setSaveCoverArt(enabled: Boolean)
 }

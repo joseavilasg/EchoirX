@@ -23,6 +23,10 @@ class SettingsUseCase @Inject constructor(
     suspend fun getServerUrl(): String = repository.getServerUrl()
 
     suspend fun setServerUrl(url: String) = repository.setServerUrl(url)
+    
+    suspend fun getSaveCoverArt(): Boolean = repository.getSaveCoverArt()
+    
+    suspend fun setSaveCoverArt(enabled: Boolean) = repository.setSaveCoverArt(enabled)
 
     suspend fun resetServerSettings() {
         repository.setServerUrl("https://example.com/api/echoir")

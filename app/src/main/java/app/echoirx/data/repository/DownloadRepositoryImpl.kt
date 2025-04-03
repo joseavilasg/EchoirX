@@ -118,13 +118,17 @@ class DownloadRepositoryImpl @Inject constructor(
 
             // Embed metadata while file is still in cache
             metadataManager.embedMetadata(cacheFile.absolutePath, metadata)
-
+            
             // Get download info and generate filename
             val download =
                 getDownloadById(downloadId) ?: throw IOException("Download info not found")
-
+                
             // Generate safe filename
             val safeFileName = generateFileName(download)
+            
+            // Save cover art separately if setting is enabled
+            val saveCoverArt = settingsRepository.getSaveCoverArt()
+            val coverArtData = if (saveCoverArt) metadataManager.getCoverArtData(metadata) else null
 
             // Move to final location
             val finalPath = when (val customDir = settingsRepository.getOutputDirectory()) {
@@ -148,6 +152,14 @@ class DownloadRepositoryImpl @Inject constructor(
 
                     cacheFile.copyTo(finalFile, overwrite = false)
                     scanMedia(finalFile.absolutePath)
+                    
+                    // Save cover art if needed
+                    if (saveCoverArt && coverArtData != null) {
+                        val coverFile = File(targetDir, "$finalFileName.jpg")
+                        coverFile.writeBytes(coverArtData)
+                        scanMedia(coverFile.absolutePath)
+                    }
+                    
                     finalFile.absolutePath
                 }
 
@@ -175,6 +187,16 @@ class DownloadRepositoryImpl @Inject constructor(
                     context.contentResolver.openOutputStream(finalFile.uri)?.use { output ->
                         cacheFile.inputStream().use { it.copyTo(output) }
                     } ?: throw IOException("Could not open output stream")
+                    
+                    // Save cover art if needed
+                    if (saveCoverArt && coverArtData != null) {
+                        val coverFile = targetDir.createFile("image/jpeg", "$finalFileName.jpg")
+                            ?: throw IOException("Could not create cover art file")
+                            
+                        context.contentResolver.openOutputStream(coverFile.uri)?.use { output ->
+                            output.write(coverArtData)
+                        } ?: throw IOException("Could not open output stream for cover art")
+                    }
 
                     finalFile.uri.toString()
                 }

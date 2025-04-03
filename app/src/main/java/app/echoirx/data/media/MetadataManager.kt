@@ -17,6 +17,20 @@ import javax.inject.Singleton
 class MetadataManager @Inject constructor(
     private val apiService: ApiService
 ) {
+    /**
+     * Returns the cover art data if available
+     */
+    suspend fun getCoverArtData(metadata: Map<String, String>): ByteArray? {
+        return try {
+            metadata["COVER"]?.let { coverUrl ->
+                val imageData = apiService.downloadFile(coverUrl)
+                if (isValidImageData(imageData)) imageData else null
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error downloading cover art", e)
+            null
+        }
+    }
     companion object {
         private const val TAG = "MetadataManager"
     }

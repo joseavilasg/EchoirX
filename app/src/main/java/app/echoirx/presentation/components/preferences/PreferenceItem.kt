@@ -12,6 +12,7 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -30,6 +31,8 @@ fun PreferenceItem(
     onClick: (() -> Unit)? = null,
     iconTint: Color = LocalContentColor.current,
     position: PreferencePosition = PreferencePosition.Single,
+    hasSwitch: Boolean = false,
+    switchValue: Boolean = false,
 ) {
     val shape = when (position) {
         PreferencePosition.Single -> RoundedCornerShape(12.dp)
@@ -94,6 +97,14 @@ fun PreferenceItem(
                     contentDescription = null,
                     tint = iconTint,
                     modifier = Modifier.size(24.dp)
+                )
+            }
+        },
+        trailingContent = {
+            if (hasSwitch) {
+                Switch(
+                    checked = switchValue,
+                    onCheckedChange = { onClick?.invoke() }
                 )
             }
         }
