@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.WorkManager
 import app.echoirx.data.local.dao.DownloadDao
+import app.echoirx.domain.model.AlbumFolderFormat
 import app.echoirx.domain.model.FileNamingFormat
 import app.echoirx.domain.repository.SearchHistoryRepository
 import app.echoirx.domain.usecase.SettingsUseCase
@@ -33,14 +34,16 @@ class SettingsViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             val dir = settingsUseCase.getOutputDirectory()
-            val format = settingsUseCase.getFileNamingFormat()
+            val fileFormat = settingsUseCase.getFileNamingFormat()
+            val folderFormat = settingsUseCase.getAlbumFolderFormat()
             val region = settingsUseCase.getRegion()
             val serverUrl = settingsUseCase.getServerUrl()
 
             _state.update {
                 it.copy(
                     outputDirectory = dir,
-                    fileNamingFormat = format,
+                    fileNamingFormat = fileFormat,
+                    albumFolderFormat = folderFormat,
                     region = region,
                     serverUrl = serverUrl
                 )
@@ -65,6 +68,17 @@ class SettingsViewModel @Inject constructor(
             _state.update {
                 it.copy(
                     fileNamingFormat = format
+                )
+            }
+        }
+    }
+
+    fun updateAlbumFolderFormat(format: AlbumFolderFormat) {
+        viewModelScope.launch {
+            settingsUseCase.setAlbumFolderFormat(format)
+            _state.update {
+                it.copy(
+                    albumFolderFormat = format
                 )
             }
         }
@@ -124,6 +138,7 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             settingsUseCase.setOutputDirectory(null)
             settingsUseCase.setFileNamingFormat(FileNamingFormat.TITLE_ONLY)
+            settingsUseCase.setAlbumFolderFormat(AlbumFolderFormat.ALBUM_ONLY)
             settingsUseCase.setRegion("BR")
             settingsUseCase.resetServerSettings()
 
@@ -131,6 +146,7 @@ class SettingsViewModel @Inject constructor(
                 it.copy(
                     outputDirectory = null,
                     fileNamingFormat = FileNamingFormat.TITLE_ONLY,
+                    albumFolderFormat = AlbumFolderFormat.ALBUM_ONLY,
                     region = "BR",
                     serverUrl = defaultServerUrl
                 )

@@ -1,5 +1,6 @@
 package app.echoirx.domain.usecase
 
+import app.echoirx.domain.model.AlbumFolderFormat
 import app.echoirx.domain.model.FileNamingFormat
 import app.echoirx.domain.repository.SettingsRepository
 import javax.inject.Inject
@@ -15,6 +16,11 @@ class SettingsUseCase @Inject constructor(
 
     suspend fun setFileNamingFormat(format: FileNamingFormat) =
         repository.setFileNamingFormat(format)
+
+    suspend fun getAlbumFolderFormat(): AlbumFolderFormat = repository.getAlbumFolderFormat()
+
+    suspend fun setAlbumFolderFormat(format: AlbumFolderFormat) =
+        repository.setAlbumFolderFormat(format)
 
     suspend fun getRegion(): String = repository.getRegion()
 

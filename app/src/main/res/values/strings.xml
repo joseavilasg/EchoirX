@@ -196,6 +196,13 @@
     <string name="file_format_title_artist_display">Title - Artist</string>
     <string name="file_format_title_only_display">Title</string>
 
+    <!-- Album Folder Format -->
+    <string name="folder_format_album_only_display">Album Name</string>
+    <string name="folder_format_artist_only_display">Artist Name</string>
+    <string name="folder_format_artist_album_display">Artist/Album</string>
+    <string name="title_album_folder_format">Album folder format</string>
+    <string name="msg_album_folder_desc">Choose how album folders will be organized</string>
+
     <!-- Hints -->
     <string name="hint_search">Search for %1$s…</string>
     <string name="hint_server_url">https://example.com/api/echoir</string>

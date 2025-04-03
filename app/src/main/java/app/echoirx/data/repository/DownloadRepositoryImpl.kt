@@ -51,7 +51,16 @@ class DownloadRepositoryImpl @Inject constructor(
                     val musicDir =
                         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
                     val echoirDir = File(musicDir, "Echoir").apply { mkdirs() }
-                    val albumDirName = if (explicit) "$albumTitle (E)" else albumTitle
+
+                    // Get the album folder format from settings
+                    val download = downloadDao.getDownloadByAlbumTitle(albumTitle)?.firstOrNull()
+                    val folderFormat = settingsRepository.getAlbumFolderFormat()
+                    val artist = download?.artist ?: ""
+
+                    // Format directory name based on selected format
+                    val rawDirName = folderFormat.format(artist, albumTitle)
+                    val albumDirName = if (explicit) "$rawDirName (E)" else rawDirName
+
                     val safeDirName = getNextAvailableName(sanitizeFileName(albumDirName)) {
                         File(echoirDir, it).exists()
                     }
@@ -63,7 +72,15 @@ class DownloadRepositoryImpl @Inject constructor(
                     val directory = DocumentFile.fromTreeUri(context, uri)
                         ?: throw IOException("Could not access directory")
 
-                    val albumDirName = if (explicit) "$albumTitle (E)" else albumTitle
+                    // Get the album folder format from settings
+                    val download = downloadDao.getDownloadByAlbumTitle(albumTitle)?.firstOrNull()
+                    val folderFormat = settingsRepository.getAlbumFolderFormat()
+                    val artist = download?.artist ?: ""
+
+                    // Format directory name based on selected format
+                    val rawDirName = folderFormat.format(artist, albumTitle)
+                    val albumDirName = if (explicit) "$rawDirName (E)" else rawDirName
+
                     val safeDirName = getNextAvailableName(sanitizeFileName(albumDirName)) {
                         directory.findFile(it) != null
                     }

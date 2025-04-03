@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import app.echoirx.domain.model.AlbumFolderFormat
 import app.echoirx.domain.model.FileNamingFormat
 import app.echoirx.domain.repository.SettingsRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -23,6 +24,7 @@ class SettingsRepositoryImpl @Inject constructor(
     private object PreferencesKeys {
         val OUTPUT_DIRECTORY = stringPreferencesKey("output_directory")
         val FILE_NAMING_FORMAT = intPreferencesKey("file_naming_format")
+        val ALBUM_FOLDER_FORMAT = intPreferencesKey("album_folder_format")
         val REGION = stringPreferencesKey("region")
         val SERVER_URL = stringPreferencesKey("server_url")
     }
@@ -52,6 +54,17 @@ class SettingsRepositoryImpl @Inject constructor(
     override suspend fun setFileNamingFormat(format: FileNamingFormat) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.FILE_NAMING_FORMAT] = format.ordinal
+        }
+    }
+
+    override suspend fun getAlbumFolderFormat(): AlbumFolderFormat {
+        val ordinal = context.dataStore.data.first()[PreferencesKeys.ALBUM_FOLDER_FORMAT] ?: 0
+        return AlbumFolderFormat.fromOrdinal(ordinal)
+    }
+
+    override suspend fun setAlbumFolderFormat(format: AlbumFolderFormat) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.ALBUM_FOLDER_FORMAT] = format.ordinal
         }
     }
 

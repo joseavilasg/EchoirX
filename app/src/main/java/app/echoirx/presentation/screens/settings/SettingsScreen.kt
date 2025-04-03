@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Album
 import androidx.compose.material.icons.outlined.CloudQueue
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Folder
@@ -38,6 +39,7 @@ import app.echoirx.domain.model.Region
 import app.echoirx.presentation.components.preferences.PreferenceCategory
 import app.echoirx.presentation.components.preferences.PreferenceItem
 import app.echoirx.presentation.components.preferences.PreferencePosition
+import app.echoirx.presentation.screens.settings.components.AlbumFolderBottomSheet
 import app.echoirx.presentation.screens.settings.components.FileNamingBottomSheet
 import app.echoirx.presentation.screens.settings.components.RegionBottomSheet
 import app.echoirx.presentation.screens.settings.components.ServerBottomSheet
@@ -51,7 +53,8 @@ fun SettingsScreen(
     val focusManager = LocalFocusManager.current
     val state by viewModel.state.collectAsState()
 
-    var showFormatSheet by remember { mutableStateOf(false) }
+    var showFileFormatSheet by remember { mutableStateOf(false) }
+    var showAlbumFormatSheet by remember { mutableStateOf(false) }
     var showResetSheet by remember { mutableStateOf(false) }
     var showClearDataSheet by remember { mutableStateOf(false) }
     var showClearHistorySheet by remember { mutableStateOf(false) }
@@ -78,13 +81,25 @@ fun SettingsScreen(
         }
     }
 
-    if (showFormatSheet) {
+    if (showFileFormatSheet) {
         FileNamingBottomSheet(
             selectedFormat = state.fileNamingFormat,
             onSelectFormat = { format ->
                 viewModel.updateFileNamingFormat(format)
+                showFileFormatSheet = false
             },
-            onDismiss = { showFormatSheet = false }
+            onDismiss = { showFileFormatSheet = false }
+        )
+    }
+
+    if (showAlbumFormatSheet) {
+        AlbumFolderBottomSheet(
+            initialFormat = state.albumFolderFormat,
+            onDismiss = { showAlbumFormatSheet = false },
+            onConfirm = { format ->
+                viewModel.updateAlbumFolderFormat(format)
+                showAlbumFormatSheet = false
+            }
         )
     }
 
@@ -209,7 +224,17 @@ fun SettingsScreen(
                 title = stringResource(R.string.title_file_naming_format),
                 subtitle = stringResource(state.fileNamingFormat.displayNameResId),
                 icon = Icons.Outlined.TextFormat,
-                onClick = { showFormatSheet = true },
+                onClick = { showFileFormatSheet = true },
+                position = PreferencePosition.Middle
+            )
+        }
+
+        item {
+            PreferenceItem(
+                title = stringResource(R.string.title_album_folder_format),
+                subtitle = stringResource(state.albumFolderFormat.displayNameResId),
+                icon = Icons.Outlined.Album,
+                onClick = { showAlbumFormatSheet = true },
                 position = PreferencePosition.Bottom
             )
         }

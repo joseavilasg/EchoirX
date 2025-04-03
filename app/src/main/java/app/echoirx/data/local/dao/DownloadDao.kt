@@ -21,6 +21,9 @@ interface DownloadDao {
     @Query("SELECT * FROM downloads WHERE trackId = :trackId")
     suspend fun getDownloadsByTrackId(trackId: Long): List<Download>
 
+    @Query("SELECT * FROM downloads WHERE albumTitle = :albumTitle")
+    suspend fun getDownloadByAlbumTitle(albumTitle: String): List<Download>?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(download: Download)
 
