@@ -6,56 +6,37 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
-import app.echoirx.presentation.navigation.NavConstants
-import app.echoirx.presentation.navigation.Route
-import app.echoirx.presentation.navigation.navigationItems
+import app.echoirx.presentation.navigation.SearchRoute
+import app.echoirx.presentation.navigation.TOP_LEVEL_ROUTES
+import app.echoirx.presentation.navigation.TopLevelBackStack
 
 @Composable
 fun EchoirBottomNav(
-    navController: NavHostController,
-    currentRoute: Route?
+    topLevelBackStack: TopLevelBackStack<Any>
 ) {
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-
     NavigationBar {
-        navigationItems.forEach { item ->
-            val isSelected = when (item.route) {
-                Route.Search.Main.path -> Route.Search.isInSearchSection(navBackStackEntry?.destination?.route)
-                else -> currentRoute?.path == item.route
+        TOP_LEVEL_ROUTES.forEach { topLevelRoute ->
+            val isSelected = when (topLevelRoute) {
+                SearchRoute -> topLevelBackStack.isInSearchSection()
+                else -> topLevelBackStack.topLevelRoute == topLevelRoute
             }
 
             NavigationBarItem(
                 selected = isSelected,
                 onClick = {
-                    if (isSelected) {
-                        navController.currentBackStackEntry?.savedStateHandle?.apply {
-                            set(NavConstants.KEY_FOCUS_SEARCH_BAR, true)
-                        }
-                    } else {
-                        navController.navigate(item.route) {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    }
+                    topLevelBackStack.addTopLevel(topLevelRoute)
                 },
                 icon = {
                     Icon(
-                        painter = painterResource(item.icon),
-                        contentDescription = stringResource(item.label),
+                        painter = painterResource(topLevelRoute.icon),
+                        contentDescription = stringResource(topLevelRoute.label)
                     )
                 },
                 label = {
                     Text(
-                        text = stringResource(item.label),
+                        text = stringResource(topLevelRoute.label),
                         style = MaterialTheme.typography.labelMedium
                     )
                 }

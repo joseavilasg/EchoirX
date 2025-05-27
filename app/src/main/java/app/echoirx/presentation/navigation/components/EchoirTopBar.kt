@@ -15,12 +15,16 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import app.echoirx.R
-import app.echoirx.presentation.navigation.Route
+import app.echoirx.presentation.navigation.HomeRoute
+import app.echoirx.presentation.navigation.SearchDetailsRoute
+import app.echoirx.presentation.navigation.SearchRoute
+import app.echoirx.presentation.navigation.SettingsRoute
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun EchoirTopBar(
-    currentRoute: Route?,
+    currentRoute: Any?,
+    canGoBack: Boolean,
     onNavigateBack: () -> Unit,
     scrollBehavior: TopAppBarScrollBehavior
 ) {
@@ -28,17 +32,17 @@ fun EchoirTopBar(
         title = {
             Text(
                 text = when (currentRoute) {
-                    is Route.Home -> stringResource(R.string.nav_home)
-                    is Route.Settings -> stringResource(R.string.nav_settings)
-                    is Route.Search.Main -> stringResource(R.string.nav_search)
-                    is Route.Search.Details -> stringResource(R.string.nav_details)
-                    null -> ""
+                    is HomeRoute -> stringResource(R.string.nav_home)
+                    is SettingsRoute -> stringResource(R.string.nav_settings)
+                    is SearchRoute -> stringResource(R.string.nav_search)
+                    is SearchDetailsRoute -> stringResource(R.string.nav_details)
+                    else -> ""
                 },
                 style = MaterialTheme.typography.titleLarge
             )
         },
         navigationIcon = {
-            if (currentRoute is Route.Search.Details) {
+            if (canGoBack) {
                 FilledTonalIconButton(
                     onClick = onNavigateBack,
                     shapes = IconButtonDefaults.shapes()

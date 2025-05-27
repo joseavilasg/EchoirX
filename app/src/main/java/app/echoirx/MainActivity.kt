@@ -7,7 +7,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.navigation.compose.rememberNavController
 import app.echoirx.data.permission.PermissionsManager
 import app.echoirx.presentation.screens.MainScreen
 import app.echoirx.presentation.theme.EchoirTheme
@@ -41,10 +40,8 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            val navController = rememberNavController()
-
             EchoirTheme {
-                MainScreen(navController = navController)
+                MainScreen()
             }
         }
     }

@@ -51,27 +51,25 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import app.echoirx.R
 import app.echoirx.data.utils.extensions.formatErrorMessage
 import app.echoirx.data.utils.extensions.showSnackbar
 import app.echoirx.domain.model.SearchResult
 import app.echoirx.presentation.components.EmptyStateMessage
 import app.echoirx.presentation.components.TrackBottomSheet
-import app.echoirx.presentation.navigation.NavConstants
-import app.echoirx.presentation.navigation.Route
 import app.echoirx.presentation.screens.search.components.FilterBottomSheet
 import app.echoirx.presentation.screens.search.components.SearchHistorySection
 import app.echoirx.presentation.screens.search.components.SearchResultItem
 import app.echoirx.presentation.screens.search.components.SearchSuggestionsSection
-import kotlinx.coroutines.flow.filter
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
-    navController: NavController,
-    viewModel: SearchViewModel = hiltViewModel(),
-    snackbarHostState: SnackbarHostState
+    onNavigateToDetails: (String, Long, SearchResult) -> Unit,
+    shouldFocusSearchBar: Boolean,
+    onFocusSearchBarHandled: () -> Unit,
+    snackbarHostState: SnackbarHostState,
+    viewModel: SearchViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
     val lazyListState = rememberLazyListState()
@@ -85,14 +83,10 @@ fun SearchScreen(
     var showFilterBottomSheet by remember { mutableStateOf(false) }
     val isPreviewPlaying by viewModel.isPreviewPlaying.collectAsState()
 
-    LaunchedEffect(Unit) {
-        navController.currentBackStackEntry?.savedStateHandle?.let { savedState ->
-            savedState.getStateFlow(NavConstants.KEY_FOCUS_SEARCH_BAR, false)
-                .filter { it }
-                .collect {
-                    focusRequester.requestFocus()
-                    savedState[NavConstants.KEY_FOCUS_SEARCH_BAR] = false
-                }
+    LaunchedEffect(shouldFocusSearchBar) {
+        if (shouldFocusSearchBar) {
+            focusRequester.requestFocus()
+            onFocusSearchBarHandled()
         }
     }
 
@@ -282,14 +276,10 @@ fun SearchScreen(
                                             selectedTrack = result
                                             showBottomSheet = true
                                         } else {
-                                            navController.currentBackStackEntry
-                                                ?.savedStateHandle
-                                                ?.set("result", result)
-                                            navController.navigate(
-                                                Route.Search.Details().createPath(
-                                                    type = state.searchType.name,
-                                                    id = result.id
-                                                )
+                                            onNavigateToDetails(
+                                                state.searchType.name,
+                                                result.id,
+                                                result
                                             )
                                         }
                                     }
@@ -367,7 +357,6 @@ fun SearchScreen(
             }
         )
     }
-
 
     if (showFilterBottomSheet) {
         FilterBottomSheet(
